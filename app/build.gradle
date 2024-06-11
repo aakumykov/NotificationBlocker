@@ -5,6 +5,7 @@ plugins {
 
 android {
     compileSdk 34
+    namespace "com.example.notificationblocker"
 
     defaultConfig {
         applicationId "com.example.notificationblocker"
