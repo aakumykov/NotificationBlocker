@@ -11,6 +11,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.notificationblocker.databinding.ActivityMainBinding
 
+// https://stackoverflow.com/questions/72853917/how-to-use-notificationlistenerservice-to-block-notification-in-android
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
