@@ -9,11 +9,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -24,6 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.notificationblocker.ui.theme.NotificationBlockerTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,65 +39,34 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NotificationBlockerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    GreetingImage(
-                        message = stringResource(R.string.hello_you),
-                        from = stringResource(R.string.from_me),
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Scaffold() { paddingValues ->
+                    DiceRollerApp(modifier = Modifier.padding(paddingValues))
                 }
+
             }
         }
     }
 }
 
+@Preview
 @Composable
-fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
+fun DiceRollerApp(modifier: Modifier = Modifier) {
+    DiceWithButtonAndImage(modifier = modifier.fillMaxSize())
+}
+
+@Composable
+fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
+    var result by remember { mutableStateOf(1) }
     Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = modifier.padding(8.dp),
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+
     ) {
-        Text(
-            text = message,
-            fontSize = 100.sp,
-            lineHeight = 116.sp,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = from,
-            fontSize = 36.sp,
-            modifier = Modifier
-                .padding(16.dp)
-                .align(alignment = Alignment.End)
-        )
-    }
-}
-
-@Composable
-fun GreetingImage(message: String, from: String, modifier: Modifier = Modifier) {
-    val image = painterResource(R.drawable.androidparty)
-    Box(modifier) {
-        Image(
-            painter = image,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            alpha = 0.5F
-        )
-        GreetingText(
-            message = message,
-            from = from,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        )
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NotificationBlockerTheme {
-        GreetingImage(message = "Hello you", from = "From me")
+        Text(result.toString())
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { result = (1..6).random() }) {
+            Text(stringResource(R.string.roll))
+        }
     }
 }

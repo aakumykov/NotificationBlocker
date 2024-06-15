@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">NotificationBlocker</string>
-    <string name="hello_you">Hello you!</string>
-    <string name="from_me">From Me</string>
+    <string name="roll">Roll</string>
 </resources>
