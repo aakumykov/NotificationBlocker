@@ -11,12 +11,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeCompilerApi
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +41,9 @@ import androidx.compose.ui.unit.sp
 import com.example.notificationblocker.ui.theme.NotificationBlockerTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import java.text.NumberFormat
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.KeyboardType
 
 
 class MainActivity : ComponentActivity() {
@@ -40,7 +53,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             NotificationBlockerTheme {
                 Scaffold() { paddingValues ->
-                    DiceRollerApp(modifier = Modifier.padding(paddingValues))
+                    TipTimeLayout(modifier = Modifier.padding(paddingValues))
                 }
 
             }
@@ -48,25 +61,67 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview
+
 @Composable
-fun DiceRollerApp(modifier: Modifier = Modifier) {
-    DiceWithButtonAndImage(modifier = modifier.fillMaxSize())
+fun TipTimeLayout(modifier: Modifier = Modifier) {
+    var amountInput by remember { mutableStateOf("0") }
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount)
+    Column(
+        modifier = modifier
+            .statusBarsPadding()
+            .padding(horizontal = 40.dp)
+            .verticalScroll(rememberScrollState())
+            .safeDrawingPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+
+        ) {
+        Text(
+            text = stringResource(id = R.string.calculate_tip),
+            modifier = Modifier
+                .padding(bottom = 16.dp, top = 40.dp)
+                .align(alignment = Alignment.Start),
+        )
+        EditNumberField(
+
+            value = amountInput,
+            onValueChange = { amountInput = it },
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+        Text(
+            text = stringResource(R.string.tip_amount, tip),
+            style = MaterialTheme.typography.displaySmall
+        )
+        Spacer(modifier = Modifier.height(150.dp))
+    }
+}
+
+private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
+    val tip = tipPercent / 100 * amount
+    return NumberFormat.getCurrencyInstance().format(tip);
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TipTimeLayoutPreview() {
+    NotificationBlockerTheme {
+        TipTimeLayout()
+    }
 }
 
 @Composable
-fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
-    var result by remember { mutableStateOf(1) }
-    Column(
+fun EditNumberField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-
-    ) {
-        Text(result.toString())
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { result = (1..6).random() }) {
-            Text(stringResource(R.string.roll))
-        }
-    }
+        label = {
+            Text(stringResource(id = R.string.bill_amount))
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    )
 }
