@@ -5,8 +5,10 @@ package com.example.notificationblocker
 import android.app.LauncherActivity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.service.quicksettings.Tile
+import android.widget.ImageView
 import androidx.compose.foundation.lazy.items
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -56,8 +59,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import java.text.NumberFormat
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.drawToBitmap
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 
 class MainActivity : ComponentActivity() {
@@ -108,16 +118,25 @@ fun NotificationBlocker(modifier: Modifier = Modifier) {
             } else {
                 application.activityInfo.applicationInfo.loadLabel(packageManager).toString()
             }
-            var packageName = application.activityInfo.packageName;
-            var iconDrawable = application.activityInfo.loadIcon(packageManager)
-            ListItem(leadingContent = {
-                // TODO: Add icon
-            }, headlineContent = {
-                Text(application.loadLabel(packageManager).toString())
-            }, supportingContent = {
-                Text(packageName)
+            val packageName = application.activityInfo.packageName;
+            val iconDrawable: Drawable = application.activityInfo.loadIcon(packageManager)
 
-            })
+            ListItem(
+                leadingContent = {
+                    Image(
+                        painter = rememberDrawablePainter(iconDrawable),
+                        contentDescription = packageName,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(64.dp),
+                    )
+                },
+                headlineContent = {
+                    Text(application.loadLabel(packageManager).toString())
+                },
+                supportingContent = {
+                    Text(packageName)
+                },
+            )
         }
     }
 }
