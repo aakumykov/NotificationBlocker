@@ -94,14 +94,10 @@ class MainActivity : ComponentActivity() {
                             Text(stringResource(R.string.notification_blocker))
                         },
                         actions = {
-                            Switch(
-                                checked = false,
-                                onCheckedChange = {},
-                            )
+                            BlockAllSwitch()
                         }
                     )
                 }
-
                 ) { paddingValues ->
                     NotificationBlocker(modifier = Modifier.padding(paddingValues))
                 }
@@ -109,6 +105,20 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@Composable
+fun BlockAllSwitch(modifier: Modifier = Modifier) {
+    var blockAll = remember {
+        mutableStateOf(false)
+    }
+    Switch(
+        checked = blockAll.value,
+        onCheckedChange = {
+            // https://stackoverflow.com/questions/42451538/how-to-start-the-notificationlistenerservice-on-android
+            blockAll.value = !blockAll.value
+        },
+    )
 }
 
 data class ApplicationsState(
