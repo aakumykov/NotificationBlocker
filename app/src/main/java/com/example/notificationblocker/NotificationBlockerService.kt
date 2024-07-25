@@ -1,63 +1,65 @@
 package com.example.notificationblocker
 
-import android.content.Intent;
-import android.os.IBinder;
-import android.service.notification.NotificationListenerService;
-import android.service.notification.StatusBarNotification;
-import android.os.Binder
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.IBinder
+import android.service.notification.NotificationListenerService
+import android.service.notification.StatusBarNotification
 import android.util.Log
 
+class NotificationBlockerService : NotificationListenerService() {
 
-// https://github.com/Chagall/notification-listener-service-example/blob/master/app/src/main/java/com/github/chagall/notificationlistenerexample/NotificationListenerExampleService.java
+    private val channelId = "NotificationBlockerServiceChannel"
 
-
-// https://www.geeksforgeeks.org/services-in-android-using-jetpack-compose/
-
-// https://github.com/pintukumarpatil/NotificationListenerService/blob/master/NotificationListener/src/main/java/com/pk/example/NLService.java
-public class NotificationBlockerService : NotificationListenerService() {
-
-//    private val binder = LocalBinder()
-
-    companion object {
-        var isBlockingEnabled: Boolean = false
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        startForeground(1, getNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        Log.d("com.example.notificationblocker.NotificationBlockerService", "Service created")
+        // Add code to block notifications here
     }
 
-//    override fun onBind(intent: Intent): IBinder {
-//        return binder
-//    }
-//
-//    inner class LocalBinder : Binder() {
-//        fun getService(): NotificationBlockerService = this@NotificationBlockerService
-//    }
-
-    override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        val text = sbn?.notification?.extras?.getString("android.text");
-        Log.d("NotificationBlockerService", "onNotificationPosted - text: $text")
-//        if (sbn != null) {
-//            val blockAll = true
-//            if (blockAll) {
-//                cancelAllNotifications()
-//            } else {
-//                val packageName = sbn.packageName;
-//                cancelNotification(sbn.key)
-//            }
-//
-//        }
-        super.onNotificationPosted(sbn)
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Your code here to block notifications
+        return START_STICKY
     }
 
-    override fun onListenerConnected() {
-        Log.d("NotificationService", "Listener connected")
-        // Retrieve the initial blocking state
-        isBlockingEnabled = getBlockingStateFromPreferences()
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
-    override fun onListenerDisconnected() {
-        Log.d("NotificationService", "Listener disconnected")
+    private fun createNotificationChannel() {
+        val serviceChannel = NotificationChannel(
+            channelId,
+            "Notification Blocker Service Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(serviceChannel)
     }
 
-    private fun getBlockingStateFromPreferences(): Boolean {
-        val sharedPreferences = getSharedPreferences("NotificationBlockerPrefs", MODE_PRIVATE)
-        return sharedPreferences.getBoolean("blocking_enabled", false)
+    private fun getNotification(): Notification {
+        return Notification.Builder(this, channelId)
+            .setContentTitle("Notification Blocker")
+            .setContentText("Blocking notifications")
+            .build()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("com.example.notificationblocker.NotificationBlockerService", "Service destroyed")
+        // Add code to unblock notifications here
+    }
+
+    override fun onNotificationPosted(sbn: StatusBarNotification) {
+        // Block notifications
+        cancelNotification(sbn.key)
+    }
+
+    override fun onNotificationRemoved(sbn: StatusBarNotification) {
+        // Optionally handle notification removal
     }
 }
