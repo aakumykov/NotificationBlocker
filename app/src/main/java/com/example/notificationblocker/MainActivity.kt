@@ -22,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.notificationblocker.ui.theme.NotificationBlockerTheme
+import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
 
 
 class MainActivity : ComponentActivity() {
@@ -59,7 +61,17 @@ class MainActivity : ComponentActivity() {
                                 if (isServiceRunning) {
                                     stopService(serviceIntent)
                                 } else {
-                                    startService(serviceIntent)
+                                    if (!NotificationManagerCompat.getEnabledListenerPackages(this)
+                                            .contains(
+                                                packageName
+                                            )
+                                    ) {
+                                        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                                    }
+
+                                    startForegroundService(
+                                        serviceIntent
+                                    )
                                 }
                                 isServiceRunning = !isServiceRunning
                             }
