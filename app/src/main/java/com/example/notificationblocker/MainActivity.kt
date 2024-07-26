@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         val manager = this.getSystemService(ACTIVITY_SERVICE) as ActivityManager
         @Suppress("DEPRECATION")
         for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (MyNotificationListenerService::class.java.name == service.service.className) {
+            if (NotificationBlockerListenerService::class.java.name == service.service.className) {
                 if (service.foreground) {
                     return true
                 }
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        serviceIntent = Intent(this, MyNotificationListenerService::class.java)
+        serviceIntent = Intent(this, NotificationBlockerListenerService::class.java)
         Log.d("NB", "MainActivity.onCreate")
 
         setContent {

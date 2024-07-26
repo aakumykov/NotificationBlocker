@@ -1,38 +1,32 @@
 package com.example.notificationblocker
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 
-class MyNotificationListenerService : NotificationListenerService() {
-
-    private val channelId = "MyNotificationListenerService"
+class NotificationBlockerListenerService : NotificationListenerService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("NB", "MyNotificationListenerService.onCreate")
+        Log.d("NB", "NotificationBlockerService.onCreate")
         // Add code to block notifications here
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Your code here to block notifications
-        Log.d("NB", "MyNotificationListenerService.onStartCommand")
+        Log.d("NB", "NotificationBlockerService.onStartCommand")
         return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        Log.d("NB", "MyNotificationListenerService.onBind")
+        Log.d("NB", "NotificationBlockerService.onBind")
         return super.onBind(intent)
     }
 
     override fun onDestroy() {
-        Log.d("NB", "MyNotificationListenerService.onDestroy")
+        Log.d("NB", "NotificationBlockerService.onDestroy")
         return super.onDestroy()
         // Add code to unblock notifications here
     }
@@ -40,7 +34,7 @@ class MyNotificationListenerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         // Block notifications
         val text = sbn.notification?.extras?.getString("android.text");
-        Log.d("NB", "MyNotificationListenerService.onNotificationPosted - text: $text")
+        Log.d("NB", "NotificationBlockerService.onNotificationPosted - text: $text")
         super.onNotificationPosted(sbn)
     }
 
@@ -49,6 +43,6 @@ class MyNotificationListenerService : NotificationListenerService() {
     }
 
     override fun onListenerConnected() {
-        Log.d("NB", "MyNotificationListenerService.onListenerConnected")
+        Log.d("NB", "NotificationBlockerService.onListenerConnected")
     }
 }
