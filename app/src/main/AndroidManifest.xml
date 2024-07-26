@@ -24,17 +24,13 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".NotificationBlockerService"
+            android:name=".MyNotificationListenerService"
             android:exported="false"
-            android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
 
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="explanation_for_special_use" />
         </service>
 
     </application>
@@ -42,9 +38,5 @@
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
 
 </manifest>

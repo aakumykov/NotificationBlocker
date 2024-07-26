@@ -10,48 +10,29 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 
-class NotificationBlockerService : NotificationListenerService() {
+class MyNotificationListenerService : NotificationListenerService() {
 
-    private val channelId = "NotificationBlockerServiceChannel"
+    private val channelId = "MyNotificationListenerService"
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        startForeground(1, getNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-        Log.d("NB", "NotificationBlockerService.onCreate")
-
+        Log.d("NB", "MyNotificationListenerService.onCreate")
         // Add code to block notifications here
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Your code here to block notifications
-        Log.d("NB", "NotificationBlockerService.onStartCommand")
+        Log.d("NB", "MyNotificationListenerService.onStartCommand")
         return START_STICKY
     }
 
-    private fun createNotificationChannel() {
-        val serviceChannel = NotificationChannel(
-            channelId,
-            "Notification Blocker Service Channel",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(serviceChannel)
-    }
-
-    private fun getNotification(): Notification {
-        return Notification.Builder(this, channelId)
-            .setContentTitle("Running...")
-            .build()
-    }
-
     override fun onBind(intent: Intent?): IBinder? {
-        Log.d("NB", "NotificationBlockerService.onBind")
+        Log.d("NB", "MyNotificationListenerService.onBind")
         return super.onBind(intent)
     }
 
     override fun onDestroy() {
-        Log.d("NB", "NotificationBlockerService.onDestroy")
+        Log.d("NB", "MyNotificationListenerService.onDestroy")
         return super.onDestroy()
         // Add code to unblock notifications here
     }
@@ -59,8 +40,7 @@ class NotificationBlockerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         // Block notifications
         val text = sbn.notification?.extras?.getString("android.text");
-        Log.d("NB", "NotificationBlockerService.onNotificationPosted - text: $text")
-        cancelNotification(sbn.key)
+        Log.d("NB", "MyNotificationListenerService.onNotificationPosted - text: $text")
         super.onNotificationPosted(sbn)
     }
 
@@ -69,6 +49,6 @@ class NotificationBlockerService : NotificationListenerService() {
     }
 
     override fun onListenerConnected() {
-        Log.d("NB", "NotificationBlockerService.onListenerConnected")
+        Log.d("NB", "MyNotificationListenerService.onListenerConnected")
     }
 }

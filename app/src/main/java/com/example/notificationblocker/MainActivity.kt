@@ -1,13 +1,8 @@
 package com.example.notificationblocker
 
 import android.app.ActivityManager
-import android.app.Service
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,7 +33,7 @@ class MainActivity : ComponentActivity() {
         val manager = this.getSystemService(ACTIVITY_SERVICE) as ActivityManager
         @Suppress("DEPRECATION")
         for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (NotificationBlockerService::class.java.name == service.service.className) {
+            if (MyNotificationListenerService::class.java.name == service.service.className) {
                 if (service.foreground) {
                     return true
                 }
@@ -49,8 +44,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        serviceIntent = Intent(this, NotificationBlockerService::class.java)
-        Log.d("NB", "com.example.notificationblocker.MainActivity.onCreate")
+        serviceIntent = Intent(this, MyNotificationListenerService::class.java)
+        Log.d("NB", "MainActivity.onCreate")
 
         setContent {
             NotificationBlockerTheme {
@@ -61,7 +56,7 @@ class MainActivity : ComponentActivity() {
                         FloatingActionButton(
                             onClick = {
                                 if (isServiceRunning) {
-                                    stopService(serviceIntent)
+                                    // Do something
                                 } else {
                                     if (!NotificationManagerCompat.getEnabledListenerPackages(this)
                                             .contains(
@@ -71,9 +66,7 @@ class MainActivity : ComponentActivity() {
                                         startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                                     }
 
-                                    startForegroundService(
-                                        serviceIntent
-                                    )
+                                    // Do something
                                 }
                                 isServiceRunning = !isServiceRunning
                             }
