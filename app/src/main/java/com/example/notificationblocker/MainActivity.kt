@@ -1,9 +1,13 @@
 package com.example.notificationblocker
 
 import android.app.ActivityManager
+import android.app.Service
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,10 +36,8 @@ class MainActivity : ComponentActivity() {
 
     private fun isServiceRunningInForeground(): Boolean {
         val manager = this.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        Log.d("NB", "isServiceRunningInForeground")
         @Suppress("DEPRECATION")
         for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            Log.d("NB", "isServiceRunningInForeground ${service.service.className}")
             if (NotificationBlockerService::class.java.name == service.service.className) {
                 if (service.foreground) {
                     return true

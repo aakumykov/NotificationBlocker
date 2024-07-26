@@ -18,17 +18,15 @@ class NotificationBlockerService : NotificationListenerService() {
         super.onCreate()
         createNotificationChannel()
         startForeground(1, getNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-        Log.d("com.example.notificationblocker.NotificationBlockerService", "Service created")
+        Log.d("NB", "NotificationBlockerService.onCreate")
+
         // Add code to block notifications here
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Your code here to block notifications
+        Log.d("NB", "NotificationBlockerService.onStartCommand")
         return START_STICKY
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
     }
 
     private fun createNotificationChannel() {
@@ -43,23 +41,34 @@ class NotificationBlockerService : NotificationListenerService() {
 
     private fun getNotification(): Notification {
         return Notification.Builder(this, channelId)
-            .setContentTitle("Notification Blocker")
-            .setContentText("Blocking notifications")
+            .setContentTitle("Running...")
             .build()
     }
 
+    override fun onBind(intent: Intent?): IBinder? {
+        Log.d("NB", "NotificationBlockerService.onBind")
+        return super.onBind(intent)
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
-        Log.d("com.example.notificationblocker.NotificationBlockerService", "Service destroyed")
+        Log.d("NB", "NotificationBlockerService.onDestroy")
+        return super.onDestroy()
         // Add code to unblock notifications here
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         // Block notifications
+        val text = sbn.notification?.extras?.getString("android.text");
+        Log.d("NB", "NotificationBlockerService.onNotificationPosted - text: $text")
         cancelNotification(sbn.key)
+        super.onNotificationPosted(sbn)
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         // Optionally handle notification removal
+    }
+
+    override fun onListenerConnected() {
+        Log.d("NB", "NotificationBlockerService.onListenerConnected")
     }
 }
