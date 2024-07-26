@@ -1,6 +1,8 @@
 package com.example.notificationblocker
 
 import android.app.ActivityManager
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -55,8 +57,10 @@ class MainActivity : ComponentActivity() {
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = {
+                                val notificationManager =
+                                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                                 if (isServiceRunning) {
-                                    // Do something
+                                    notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
                                 } else {
                                     if (!NotificationManagerCompat.getEnabledListenerPackages(this)
                                             .contains(
@@ -66,7 +70,7 @@ class MainActivity : ComponentActivity() {
                                         startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                                     }
 
-                                    // Do something
+                                    notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
                                 }
                                 isServiceRunning = !isServiceRunning
                                 NotificationBlockerListenerService.active = isServiceRunning
