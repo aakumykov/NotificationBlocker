@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             NotificationBlockerTheme {
-                var isServiceRunning by remember { mutableStateOf(isServiceRunningInForeground()) }
+                var isServiceRunning by remember { mutableStateOf(NotificationBlockerListenerService.active) }
 
                 Scaffold(
                     floatingActionButton = {
@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
                                     // Do something
                                 }
                                 isServiceRunning = !isServiceRunning
+                                NotificationBlockerListenerService.active = isServiceRunning
                             }
                         ) {
                             Icon(
