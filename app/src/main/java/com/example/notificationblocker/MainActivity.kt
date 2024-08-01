@@ -31,18 +31,6 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var serviceIntent: Intent
 
-    private fun isServiceRunningInForeground(): Boolean {
-        val manager = this.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        @Suppress("DEPRECATION")
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (NotificationBlockerListenerService::class.java.name == service.service.className) {
-                if (service.foreground) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
