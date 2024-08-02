@@ -14,17 +14,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationManagerCompat
 import com.example.notificationblocker.NotificationBlockerListenerService
 
 @Composable
-fun StartButton(modifier: Modifier = Modifier) {
+fun StartButton() {
 
     var isServiceRunning by remember { mutableStateOf(NotificationBlockerListenerService.active) }
     val context = LocalContext.current
-    Context.NOTIFICATION_SERVICE
     return FloatingActionButton(onClick = {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
