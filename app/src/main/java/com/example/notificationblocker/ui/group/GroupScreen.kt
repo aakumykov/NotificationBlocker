@@ -11,9 +11,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notificationblocker.R
+import com.example.notificationblocker.ui.AppViewModelProvider
 import com.example.notificationblocker.ui.navigation.NavigationDestination
 
 object GroupDestination : NavigationDestination {
@@ -26,27 +29,32 @@ object GroupDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreen(
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    viewModel: GroupViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text("group") },
-            navigationIcon = {
-                IconButton(onClick = navigateBack) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button)
-                    )
-                }
-            },
-        )
-    }
+    val uiState = viewModel.uiState.collectAsState()
 
-    ) { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(uiState.value.name) },
+                navigationIcon = {
+                    IconButton(onClick = navigateBack) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button)
+                        )
+                    }
+                },
+            )
+        },
+
+        ) { innerPadding ->
 
         Surface(modifier = Modifier.padding(innerPadding)) {
-            Text("Group screen")
+            Text(uiState.value.name)
         }
     }
 }
+
