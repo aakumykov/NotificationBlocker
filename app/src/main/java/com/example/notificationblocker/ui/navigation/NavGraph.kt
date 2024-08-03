@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.example.notificationblocker.ui.group.GroupDestination
+import com.example.notificationblocker.ui.group.GroupScreen
 import com.example.notificationblocker.ui.home.HomeDestination
 import com.example.notificationblocker.ui.home.HomeScreen
 
@@ -16,11 +18,16 @@ fun NotificationBlockerNavGraph(
     NavHost(
         navController = navController,
         startDestination = HomeDestination.route,
-        modifier =modifier,
+        modifier = modifier,
     ) {
         composable(route = HomeDestination.route) {
             HomeScreen(
-
+                onGroupClick = { navController.navigate(GroupDestination.route) }
+            )
+        }
+        composable(route = GroupDestination.route) {
+            GroupScreen(
+                navigateBack = { navController.popBackStack() },
             )
         }
     }

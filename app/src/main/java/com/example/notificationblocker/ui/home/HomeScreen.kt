@@ -1,5 +1,6 @@
 package com.example.notificationblocker.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
@@ -24,8 +25,8 @@ object HomeDestination : NavigationDestination {
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
-    viewModel: GroupsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: GroupsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+            onGroupClick: (id: Int) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -35,6 +36,7 @@ fun HomeScreen(
         Surface(modifier = Modifier.padding(innerPadding)) {
             HomeBody(
                 groups = uiState,
+                onGroupClick = onGroupClick,
             )
         }
     }
@@ -43,14 +45,22 @@ fun HomeScreen(
 @Composable
 fun HomeBody(
     groups: List<Group>,
+    onGroupClick: (id: Int) -> Unit,
 ) {
     LazyColumn() {
         items(items = groups, key = { it.id }) {
-            ListItem(headlineContent = {
-                Text(it.name)
-            }, supportingContent = {
-                Text(it.id.toString())
-            })
+            ListItem(
+                modifier = Modifier.clickable {
+                    onGroupClick(it.id)
+                },
+                headlineContent = {
+                    Text(it.name)
+                },
+                supportingContent = {
+                    Text(it.id.toString())
+                },
+
+            )
         }
     }
 }

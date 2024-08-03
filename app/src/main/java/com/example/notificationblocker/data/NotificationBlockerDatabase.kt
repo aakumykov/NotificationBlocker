@@ -18,7 +18,7 @@ abstract class NotificationBlockerDatabase : RoomDatabase() {
                 Room.databaseBuilder(
                     context,
                     NotificationBlockerDatabase::class.java,
-                    "notification_blocker_database"
+                    "notification_blocker"
                 ).fallbackToDestructiveMigration().build().also { Instance = it }
             }
         }
