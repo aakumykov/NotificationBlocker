@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Group::class], version = 1)
+@Database(entities = [Group::class, GroupToApp::class], version = 2, exportSchema = false)
 abstract class NotificationBlockerDatabase : RoomDatabase() {
     abstract val groupDao: GroupDao;
+    abstract val groupToAppDao: GroupToAppDao;
 
     companion object {
         @Volatile

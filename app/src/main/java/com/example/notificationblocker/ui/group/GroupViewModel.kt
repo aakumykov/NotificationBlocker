@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notificationblocker.data.Group
 import com.example.notificationblocker.data.GroupDao
+import com.example.notificationblocker.data.GroupToApp
+import com.example.notificationblocker.data.GroupToAppDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +17,9 @@ import kotlinx.coroutines.launch
 
 class GroupViewModel(
     savedStateHandle: SavedStateHandle,
-    private val dao: GroupDao,): ViewModel()
-{
+    private val dao: GroupDao,
+    private val groupToAppDao: GroupToAppDao,
+) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle[GroupDestination.itemIdArg])
 
@@ -31,10 +34,28 @@ class GroupViewModel(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = Group(
-                    id= id,
+                    id = id,
                     name = ""
                 )
             )
+
+    val appsState: StateFlow<List<String>> = groupToAppDao.getAllAppIds(id).filterNotNull().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+        initialValue = emptyList(),
+    )
+
+    fun addApp(appId: String) {
+        viewModelScope.launch {
+            groupToAppDao.upsert(GroupToApp(groupId = id, appId = appId))
+        }
+    }
+
+    fun deleteApp(appId: String) {
+        viewModelScope.launch {
+            groupToAppDao.delete(GroupToApp(groupId = id, appId = appId))
+        }
+    }
 
 
     companion object {

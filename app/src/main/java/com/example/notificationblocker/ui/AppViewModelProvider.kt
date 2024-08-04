@@ -15,9 +15,11 @@ object AppViewModelProvider {
             GroupsViewModel(database().database.groupDao)
         }
         initializer {
+            val database = database().database;
             GroupViewModel(
-                this.createSavedStateHandle(),
-                database().database.groupDao,
+                savedStateHandle = this.createSavedStateHandle(),
+                dao = database.groupDao,
+                groupToAppDao = database.groupToAppDao,
             )
         }
     }
