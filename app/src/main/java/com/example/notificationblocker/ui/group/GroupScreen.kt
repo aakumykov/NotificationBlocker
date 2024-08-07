@@ -1,5 +1,6 @@
 package com.example.notificationblocker.ui.group
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -151,14 +152,13 @@ fun EditGroupBottomSheet(
     val focusRequester = remember { FocusRequester() }
     val uiState = viewModel.uiState.collectAsState()
     var textFieldLoaded by remember { mutableStateOf(false) }
-    var groupName by remember { mutableStateOf(viewModel.uiState.value.name) }
-//    var groupName = remember {
-//        mutableStateOf(
-//            TextFieldValue(uiState.value.name,
-//            TextRange(uiState.value.name.length),
-//                ),
-//        )
-//    }
+    var groupName by remember {
+        mutableStateOf(
+            TextFieldValue(uiState.value.name,
+            TextRange(uiState.value.name.length),
+                ),
+        )
+    }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -204,9 +204,9 @@ fun EditGroupBottomSheet(
                 }
                 Button(
                     onClick = {
-                        if (groupName != uiState.value.name) {
+                        if (groupName.text != uiState.value.name) {
 
-                            viewModel.updateName(groupName)
+                            viewModel.updateName(groupName.text)
                         }
                         scope.launch { sheetState.hide() }.invokeOnCompletion {
                             if (!sheetState.isVisible) {
@@ -219,9 +219,6 @@ fun EditGroupBottomSheet(
                 }
             }
         }
-//        LaunchedEffect(Unit) {
-//            focusRequester.requestFocus()
-//        }
     }
 
 }
