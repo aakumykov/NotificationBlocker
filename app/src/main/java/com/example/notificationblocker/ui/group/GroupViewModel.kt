@@ -7,11 +7,9 @@ import com.example.notificationblocker.data.Group
 import com.example.notificationblocker.data.GroupDao
 import com.example.notificationblocker.data.GroupToApp
 import com.example.notificationblocker.data.GroupToAppDao
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -44,6 +42,12 @@ class GroupViewModel(
         started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
         initialValue = emptyList(),
     )
+
+    fun updateName(newName: String) {
+        viewModelScope.launch {
+            dao.rename(Group(id = id, name = newName, active = uiState.value.active))
+        }
+    }
 
     fun addApp(appId: String) {
         viewModelScope.launch {

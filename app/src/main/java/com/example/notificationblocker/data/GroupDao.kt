@@ -3,14 +3,13 @@ package com.example.notificationblocker.data
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
-import androidx.room.RawQuery
-import androidx.room.Upsert
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupDao {
-    @Upsert
-    suspend fun upsert(group: Group);
+    @Update
+    suspend fun rename(group: Group);
 
     @Query("SELECT * FROM groups ORDER BY name ASC")
     fun getAll(): Flow<List<Group>>

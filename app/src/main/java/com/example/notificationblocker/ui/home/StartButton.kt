@@ -15,8 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.NotificationManagerCompat
 import com.example.notificationblocker.NotificationBlockerListenerService
+import com.example.notificationblocker.R
 
 @Composable
 fun StartButton() {
@@ -43,7 +45,9 @@ fun StartButton() {
     }) {
         Icon(
             imageVector = if (isServiceRunning) Icons.Default.Close else Icons.Default.PlayArrow,
-            contentDescription = if (isServiceRunning) "Pause" else "Play"
+            contentDescription = stringResource(
+                if (isServiceRunning) R.string.pause else R.string.play
+            )
         )
     }
 }

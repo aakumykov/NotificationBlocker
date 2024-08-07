@@ -1,6 +1,10 @@
 package com.example.notificationblocker.ui.group
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -24,10 +28,33 @@ import com.example.notificationblocker.data.App
 import com.example.notificationblocker.ui.AppViewModelProvider
 import com.example.notificationblocker.ui.navigation.NavigationDestination
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 
 object GroupDestination : NavigationDestination {
@@ -48,56 +75,154 @@ fun GroupScreen(
     val linkedApps = viewModel.appsState.collectAsState();
     val context = LocalContext.current;
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(uiState.value.name) },
-                navigationIcon = {
-                    IconButton(onClick = navigateBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back_button)
-                        )
-                    }
-                },
-            )
-        },
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
-        ) { innerPadding ->
+
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text(uiState.value.name) },
+            navigationIcon = {
+                IconButton(onClick = navigateBack) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button)
+                    )
+                }
+            },
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = {
+            showBottomSheet = true
+        }) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = stringResource(R.string.edit),
+            )
+        }
+    }) { innerPadding ->
 
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(App.getAll(context), key = { it.id }) { application ->
-                ListItem(
-                    leadingContent = {
-                        Image(
-                            painter = rememberDrawablePainter(application.icon),
-                            contentDescription = application.name,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(64.dp),
-                        )
-                    },
-                    headlineContent = {
-                        Text(application.name)
-                    },
-                    supportingContent = {
-                        Text(application.id)
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = application.id in linkedApps.value,
-                            onCheckedChange = {
-                                if (it) {
-                                    viewModel.addApp(application.id)
-                                } else {
-                                    viewModel.deleteApp(application.id)
-                                }
-                            }
-                        )
-                    }
-                )
+                ListItem(leadingContent = {
+                    Image(
+                        painter = rememberDrawablePainter(application.icon),
+                        contentDescription = application.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(64.dp),
+                    )
+                }, headlineContent = {
+                    Text(application.name)
+                }, supportingContent = {
+                    Text(application.id)
+                }, trailingContent = {
+                    Switch(checked = application.id in linkedApps.value, onCheckedChange = {
+                        if (it) {
+                            viewModel.addApp(application.id)
+                        } else {
+                            viewModel.deleteApp(application.id)
+                        }
+                    })
+                })
 
             }
         }
+
+        if (showBottomSheet) {
+            EditGroupBottomSheet(
+                onDismiss = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState,
+                viewModel = viewModel,
+            )
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditGroupBottomSheet(
+    onDismiss: () -> Unit,
+    sheetState: SheetState,
+    viewModel: GroupViewModel,
+) {
+    val scope = rememberCoroutineScope()
+    val focusRequester = remember { FocusRequester() }
+    val uiState = viewModel.uiState.collectAsState()
+    var textFieldLoaded by remember { mutableStateOf(false) }
+    var groupName by remember { mutableStateOf(viewModel.uiState.value.name) }
+//    var groupName = remember {
+//        mutableStateOf(
+//            TextFieldValue(uiState.value.name,
+//            TextRange(uiState.value.name.length),
+//                ),
+//        )
+//    }
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Sheet content
+
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            TextField(
+                value = groupName,
+                onValueChange = { groupName = it },
+                label = { Text(stringResource(R.string.group_name)) },
+                modifier = Modifier.focusRequester(focusRequester).onGloballyPositioned {
+                    if (!textFieldLoaded) {
+                        focusRequester.requestFocus() // IMPORTANT
+                        textFieldLoaded = true // stop cyclic recompositions
+                    }
+                }
+
+            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+            ) {
+
+                OutlinedButton(
+                    onClick = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                onDismiss()
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+                Button(
+                    onClick = {
+                        if (groupName != uiState.value.name) {
+
+                            viewModel.updateName(groupName)
+                        }
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                onDismiss()
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+            }
+        }
+//        LaunchedEffect(Unit) {
+//            focusRequester.requestFocus()
+//        }
+    }
+
 }
 
