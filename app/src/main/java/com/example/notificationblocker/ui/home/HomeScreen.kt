@@ -9,13 +9,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +42,7 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: GroupsViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -46,9 +50,16 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(floatingActionButton = {
-        StartButton()
-    }) { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.home)) },
+            )
+        },
+        floatingActionButton = {
+            StartButton()
+        },
+    ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
             HomeBody(
                 groups = uiState,
@@ -68,6 +79,20 @@ fun HomeBody(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current;
     LazyColumn() {
+        item {
+            ListItem(
+                headlineContent = { Text (stringResource(R.string.do_not_disturb))},
+                trailingContent = {
+                    Switch(
+                        checked = false,
+                        onCheckedChange = {},
+                    )
+                },
+            )
+        }
+        item {
+            Divider()
+        }
         item {
             ListItem(
                 headlineContent = { Text(stringResource(R.string.add_group)) },
@@ -97,7 +122,17 @@ fun HomeBody(
                 headlineContent = {
                     Text(it.name)
                 },
+
+                trailingContent = {
+                    Switch(
+                        checked = false,
+                        onCheckedChange = {},
+                    )
+                },
             )
+        }
+        item {
+            Divider()
         }
 
         items(App.getAll(context), key = { it.id }) { application ->
@@ -115,6 +150,12 @@ fun HomeBody(
                 },
                 supportingContent = {
                     Text(application.id)
+                },
+                trailingContent = {
+                    Switch(
+                        checked = false,
+                        onCheckedChange = {},
+                    )
                 },
             )
 
