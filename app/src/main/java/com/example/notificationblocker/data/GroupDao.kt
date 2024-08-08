@@ -16,7 +16,7 @@ interface GroupDao {
     @Update
     suspend fun rename(group: Group)
 
-    @Query("SELECT * FROM groups ORDER BY name ASC")
+    @Query("SELECT * FROM groups ORDER BY name COLLATE NOCASE ASC")
     fun getAll(): Flow<List<Group>>
 
     @Query("SELECT * from groups WHERE id = :id")
