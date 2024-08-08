@@ -12,4 +12,5 @@
     <string name="add_group">Add group</string>
     <string name="do_not_disturb">Do not disturb</string>
     <string name="home">Home</string>
+    <string name="delete">Delete</string>
 </resources>

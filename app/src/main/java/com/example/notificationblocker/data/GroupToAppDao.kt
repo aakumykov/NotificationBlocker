@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupToAppDao {
-    @Query("SELECT appId FROM group_app WHERE groupId = :groupId")
+    @Query("SELECT app_id FROM group_app WHERE group_id = :groupId")
     fun getAllAppIds(groupId: Int): Flow<List<String>>
 
     @Upsert

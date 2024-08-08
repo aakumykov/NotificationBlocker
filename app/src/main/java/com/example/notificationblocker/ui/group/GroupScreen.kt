@@ -29,6 +29,7 @@ import com.example.notificationblocker.data.App
 import com.example.notificationblocker.ui.AppViewModelProvider
 import com.example.notificationblocker.ui.navigation.NavigationDestination
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
@@ -53,6 +54,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.notificationblocker.ui.home.GroupsViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
@@ -64,6 +66,7 @@ object GroupDestination : NavigationDestination {
     const val itemIdArg = "groupId"
     val routeWithArgs = "$route/{$itemIdArg}"
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,13 +87,30 @@ fun GroupScreen(
         TopAppBar(
             title = { Text(uiState.value.name) },
             navigationIcon = {
-                IconButton(onClick = navigateBack) {
+                IconButton(
+                    onClick = navigateBack,
+                ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button)
                     )
                 }
             },
+            actions = {
+                IconButton(
+                    onClick = {
+                        // TODO: Add confirmation
+                        viewModel.delete()
+                        navigateBack()
+
+                },
+                    ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = stringResource(R.string.delete),
+                    )
+                }
+            }
         )
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
@@ -154,9 +174,10 @@ fun EditGroupBottomSheet(
     var textFieldLoaded by remember { mutableStateOf(false) }
     var groupName by remember {
         mutableStateOf(
-            TextFieldValue(uiState.value.name,
-            TextRange(uiState.value.name.length),
-                ),
+            TextFieldValue(
+                uiState.value.name,
+                TextRange(uiState.value.name.length),
+            ),
         )
     }
     ModalBottomSheet(
@@ -176,12 +197,14 @@ fun EditGroupBottomSheet(
                 value = groupName,
                 onValueChange = { groupName = it },
                 label = { Text(stringResource(R.string.group_name)) },
-                modifier = Modifier.focusRequester(focusRequester).onGloballyPositioned {
-                    if (!textFieldLoaded) {
-                        focusRequester.requestFocus() // IMPORTANT
-                        textFieldLoaded = true // stop cyclic recompositions
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .onGloballyPositioned {
+                        if (!textFieldLoaded) {
+                            focusRequester.requestFocus() // IMPORTANT
+                            textFieldLoaded = true // stop cyclic recompositions
+                        }
                     }
-                }
 
             )
             Row(

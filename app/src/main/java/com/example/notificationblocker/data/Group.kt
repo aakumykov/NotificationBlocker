@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 data class Group(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val name: String,
+    val name: String = "",
     val active: Boolean = false,
 )
