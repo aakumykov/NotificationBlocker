@@ -13,4 +13,5 @@
     <string name="do_not_disturb">Do not disturb</string>
     <string name="home">Home</string>
     <string name="delete">Delete</string>
+    <string name="delete_question">Delete?</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.example.notificationblocker.ui.group
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,6 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +51,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.notificationblocker.ui.home.GroupsViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 
 object GroupDestination : NavigationDestination {
@@ -79,8 +74,10 @@ fun GroupScreen(
     val linkedApps = viewModel.appsState.collectAsState();
     val context = LocalContext.current;
 
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val editSheetState = rememberModalBottomSheetState()
+    var showEditBottomSheet by remember { mutableStateOf(false) }
+    val deleteSheetState = rememberModalBottomSheetState()
+    var showDeleteBottomSheet by remember { mutableStateOf(false) }
 
 
     Scaffold(topBar = {
@@ -99,12 +96,10 @@ fun GroupScreen(
             actions = {
                 IconButton(
                     onClick = {
-                        // TODO: Add confirmation
-                        viewModel.delete()
-                        navigateBack()
+                        showDeleteBottomSheet = true
 
-                },
-                    ) {
+                    },
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = stringResource(R.string.delete),
@@ -114,7 +109,7 @@ fun GroupScreen(
         )
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
-            showBottomSheet = true
+            showEditBottomSheet = true
         }) {
             Icon(
                 imageVector = Icons.Default.Edit,
@@ -149,13 +144,24 @@ fun GroupScreen(
             }
         }
 
-        if (showBottomSheet) {
+        if (showEditBottomSheet) {
             EditGroupBottomSheet(
                 onDismiss = {
-                    showBottomSheet = false
+                    showEditBottomSheet = false
                 },
-                sheetState = sheetState,
+                sheetState = editSheetState,
                 viewModel = viewModel,
+            )
+        }
+
+        if (showDeleteBottomSheet) {
+            DeleteGroupBottomSheet(
+                onDismiss = {
+                    showDeleteBottomSheet = false
+                },
+                sheetState = deleteSheetState,
+                viewModel = viewModel,
+                navigateBack = navigateBack,
             )
         }
     }
@@ -243,6 +249,65 @@ fun EditGroupBottomSheet(
             }
         }
     }
-
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteGroupBottomSheet(
+    onDismiss: () -> Unit,
+    sheetState: SheetState,
+    viewModel: GroupViewModel,
+    navigateBack: () -> Unit,
+) {
+
+    val scope = rememberCoroutineScope()
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Sheet content
+
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(stringResource(R.string.delete_question))
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+            ) {
+
+                OutlinedButton(
+                    onClick = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                onDismiss()
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+                Button(
+                    onClick = {
+
+                        viewModel.delete()
+                        navigateBack()
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                onDismiss()
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            }
+        }
+    }
+}
