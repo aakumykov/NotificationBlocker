@@ -12,6 +12,7 @@ data class App(
 ) {
     companion object {
 
+        // TODO: How to properly cache this?
         private var allApps: List<App>? = null;
         fun getAll(context: Context): List<App> {
             if (allApps != null) return allApps!!
