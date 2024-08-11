@@ -1,6 +1,5 @@
 package com.example.notificationblocker.ui.home
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notificationblocker.R
 import com.example.notificationblocker.data.App
-import com.example.notificationblocker.data.Group
 import com.example.notificationblocker.ui.AppViewModelProvider
 import com.example.notificationblocker.ui.navigation.NavigationDestination
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -45,7 +42,7 @@ object HomeDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: GroupsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onGroupClick: (id: Int) -> Unit,
 ) {
 
@@ -71,15 +68,17 @@ fun HomeScreen(
 @Composable
 fun HomeBody(
     onGroupClick: (id: Int) -> Unit,
-    viewModel: GroupsViewModel,
+    viewModel: HomeViewModel,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current;
-    val groups by viewModel.uiState.collectAsState()
+    val groups by viewModel.groups.collectAsState()
+    val appIds by viewModel.apps.collectAsState()
+
     LazyColumn() {
         item {
             ListItem(
-                headlineContent = { Text (stringResource(R.string.do_not_disturb))},
+                headlineContent = { Text(stringResource(R.string.do_not_disturb)) },
                 trailingContent = {
                     Switch(
                         checked = false,
@@ -112,7 +111,7 @@ fun HomeBody(
 
                 )
         }
-        items(items = groups, key = { it -> it.id }) { group ->
+        items(items = groups, key = { it.id }) { group ->
             ListItem(
                 modifier = Modifier.clickable {
                     onGroupClick(group.id)
@@ -136,7 +135,7 @@ fun HomeBody(
         }
         item {
             ListItem(
-                headlineContent = { Text (stringResource(R.string.all_applications))},
+                headlineContent = { Text(stringResource(R.string.all_applications)) },
                 trailingContent = {
                     Switch(
                         checked = false,
@@ -167,8 +166,10 @@ fun HomeBody(
                 },
                 trailingContent = {
                     Switch(
-                        checked = false,
-                        onCheckedChange = {},
+                        checked = appIds.contains(application.id),
+                        onCheckedChange = {
+                            viewModel.toggleApp(application.id, it)
+                        },
                     )
                 },
             )

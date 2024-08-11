@@ -7,12 +7,13 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.notificationblocker.NotificationBlockerApplication
 import com.example.notificationblocker.ui.group.GroupViewModel
-import com.example.notificationblocker.ui.home.GroupsViewModel
+import com.example.notificationblocker.ui.home.HomeViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            GroupsViewModel(database().database.groupDao)
+            val database = database().database;
+            HomeViewModel(database.groupDao, database.appIdDao)
         }
         initializer {
             val database = database().database;
