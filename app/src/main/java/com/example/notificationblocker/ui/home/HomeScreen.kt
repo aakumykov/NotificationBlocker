@@ -48,7 +48,6 @@ fun HomeScreen(
     viewModel: GroupsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onGroupClick: (id: Int) -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -62,7 +61,6 @@ fun HomeScreen(
     ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
             HomeBody(
-                groups = uiState,
                 onGroupClick = onGroupClick,
                 viewModel = viewModel,
             )
@@ -72,12 +70,12 @@ fun HomeScreen(
 
 @Composable
 fun HomeBody(
-    groups: List<Group>,
     onGroupClick: (id: Int) -> Unit,
     viewModel: GroupsViewModel,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current;
+    val groups by viewModel.uiState.collectAsState()
     LazyColumn() {
         item {
             ListItem(
@@ -114,19 +112,21 @@ fun HomeBody(
 
                 )
         }
-        items(items = groups, key = { it.id }) {
+        items(items = groups, key = { it -> it.id }) { group ->
             ListItem(
                 modifier = Modifier.clickable {
-                    onGroupClick(it.id)
+                    onGroupClick(group.id)
                 },
                 headlineContent = {
-                    Text(it.name)
+                    Text(group.name)
                 },
 
                 trailingContent = {
                     Switch(
-                        checked = false,
-                        onCheckedChange = {},
+                        checked = group.active,
+                        onCheckedChange = {
+                            viewModel.toggleGroup(group, it)
+                        },
                     )
                 },
             )

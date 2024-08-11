@@ -45,7 +45,7 @@ class GroupViewModel(
 
     fun updateName(newName: String) {
         viewModelScope.launch {
-            dao.rename(Group(id = id, name = newName, active = uiState.value.active))
+            dao.update(Group(id = id, name = newName, active = uiState.value.active))
         }
     }
 

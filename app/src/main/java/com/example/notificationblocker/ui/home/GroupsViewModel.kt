@@ -1,18 +1,14 @@
 package com.example.notificationblocker.ui.home
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notificationblocker.data.Group
 import com.example.notificationblocker.data.GroupDao
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class GroupsViewModel(private val groupDao: GroupDao) : ViewModel() {
     val uiState: StateFlow<List<Group>> = groupDao.getAll().stateIn(
@@ -31,6 +27,19 @@ class GroupsViewModel(private val groupDao: GroupDao) : ViewModel() {
                 )
             )
         }.await().toInt()
+    }
+
+    fun toggleGroup(group: Group, value: Boolean) {
+        if (value == group.active) return
+        viewModelScope.launch {
+            groupDao.update(
+                Group(
+                    id = group.id,
+                    name = group.name,
+                    active = value,
+                )
+            )
+        }
     }
 
     companion object {

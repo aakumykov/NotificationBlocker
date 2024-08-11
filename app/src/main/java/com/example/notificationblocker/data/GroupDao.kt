@@ -14,7 +14,7 @@ interface GroupDao {
     suspend fun insert(group: Group): Long
 
     @Update
-    suspend fun rename(group: Group)
+    suspend fun update(group: Group)
 
     @Query("SELECT * FROM groups ORDER BY name COLLATE NOCASE ASC")
     fun getAll(): Flow<List<Group>>
