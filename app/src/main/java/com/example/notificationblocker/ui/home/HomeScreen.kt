@@ -134,6 +134,20 @@ fun HomeBody(
         item {
             Divider()
         }
+        item {
+            ListItem(
+                headlineContent = { Text (stringResource(R.string.all_applications))},
+                trailingContent = {
+                    Switch(
+                        checked = false,
+                        onCheckedChange = {},
+                    )
+                },
+            )
+        }
+        item {
+            Divider()
+        }
 
         items(App.getAll(context), key = { it.id }) { application ->
             ListItem(
