@@ -158,7 +158,7 @@ fun HomeBody(
             Divider()
         }
 
-        items(App.getAll(context), key = { it.id }) { application ->
+        items(App.allApps, key = { it.id }) { application ->
             ListItem(
                 leadingContent = {
                     Image(

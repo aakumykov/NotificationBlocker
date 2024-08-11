@@ -119,7 +119,7 @@ fun GroupScreen(
     }) { innerPadding ->
 
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            items(App.getAll(context), key = { it.id }) { application ->
+            items(App.allApps, key = { it.id }) { application ->
                 ListItem(leadingContent = {
                     Image(
                         painter = rememberDrawablePainter(application.icon),
