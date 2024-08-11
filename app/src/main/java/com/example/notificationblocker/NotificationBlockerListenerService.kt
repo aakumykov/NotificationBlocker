@@ -5,10 +5,12 @@ import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import com.example.notificationblocker.data.allApplicationsAppId
 
 class NotificationBlockerListenerService : NotificationListenerService() {
     companion object {
         var active = false
+        var appIds = emptySet<String>()
     }
 
     override fun onCreate() {
@@ -37,8 +39,8 @@ class NotificationBlockerListenerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         // Block notifications
         val text = sbn.notification?.extras?.getString("android.text");
-        Log.d("NB", "NotificationBlockerListenerService.onNotificationPosted - active $active - text: $text")
-        if (active) {
+        Log.d("NB", "NotificationBlockerListenerService.onNotificationPosted - active $active - text: $text - packageName ${sbn.packageName}")
+        if (active && (appIds.contains(allApplicationsAppId) || appIds.contains(sbn.packageName)) ) {
             cancelNotification(sbn.key)
 
         }

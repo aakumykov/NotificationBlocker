@@ -24,4 +24,5 @@ interface GroupDao {
 
     @Delete
     suspend fun delete(group: Group)
+
 }

@@ -16,4 +16,7 @@ interface GroupToAppDao {
 
     @Delete
     suspend fun delete(groupToApp: GroupToApp)
+
+    @Query("SELECT DISTINCT app_id FROM group_app LEFT JOIN groups ON group_app.group_id = groups.id WHERE groups.active")
+    fun getAllActiveApps(): Flow<List<String>>
 }

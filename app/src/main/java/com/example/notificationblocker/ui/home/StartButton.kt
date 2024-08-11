@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,19 +18,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notificationblocker.NotificationBlockerListenerService
 import com.example.notificationblocker.R
+import com.example.notificationblocker.data.doNotDisturbAppId
+import com.example.notificationblocker.ui.AppViewModelProvider
 
 @Composable
-fun StartButton() {
+fun StartButton(
+    viewModel: StartButtonViewModel =  viewModel(factory = AppViewModelProvider.Factory)
+) {
 
     var isServiceRunning by remember { mutableStateOf(NotificationBlockerListenerService.active) }
     val context = LocalContext.current
+    val apps by viewModel.apps.collectAsState();
+
+
     return FloatingActionButton(onClick = {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (isServiceRunning) {
-            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+            if (apps.contains(doNotDisturbAppId)) {
+                notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+            }
+            NotificationBlockerListenerService.appIds = emptySet();
         } else {
             if (!NotificationManagerCompat.getEnabledListenerPackages(context).contains(
                     context.packageName
@@ -38,7 +50,10 @@ fun StartButton() {
                 context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
             }
 
-            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
+            if (apps.contains(doNotDisturbAppId)) {
+                notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
+            }
+            NotificationBlockerListenerService.appIds = apps;
         }
         isServiceRunning = !isServiceRunning
         NotificationBlockerListenerService.active = isServiceRunning

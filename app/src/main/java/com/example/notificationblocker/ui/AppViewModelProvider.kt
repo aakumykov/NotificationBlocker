@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.notificationblocker.NotificationBlockerApplication
 import com.example.notificationblocker.ui.group.GroupViewModel
 import com.example.notificationblocker.ui.home.HomeViewModel
+import com.example.notificationblocker.ui.home.StartButtonViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -21,6 +22,13 @@ object AppViewModelProvider {
                 savedStateHandle = this.createSavedStateHandle(),
                 dao = database.groupDao,
                 groupToAppDao = database.groupToAppDao,
+            )
+        }
+        initializer {
+            val database = database().database;
+            StartButtonViewModel(
+                groupToAppDao = database.groupToAppDao,
+                appIdDao = database.appIdDao,
             )
         }
     }
