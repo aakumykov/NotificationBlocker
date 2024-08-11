@@ -110,7 +110,6 @@ fun HomeBody(
                 modifier = Modifier.clickable {
 
                     scope.launch {
-                        // TODO: Fix crash
                         viewModel.addGroup().also {
                             onGroupClick(it)
                         }
