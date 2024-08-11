@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notificationblocker.R
 import com.example.notificationblocker.data.App
+import com.example.notificationblocker.data.allApplicationsAppId
+import com.example.notificationblocker.data.doNotDisturbAppId
 import com.example.notificationblocker.ui.AppViewModelProvider
 import com.example.notificationblocker.ui.navigation.NavigationDestination
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -65,6 +67,7 @@ fun HomeScreen(
     }
 }
 
+
 @Composable
 fun HomeBody(
     onGroupClick: (id: Int) -> Unit,
@@ -75,14 +78,18 @@ fun HomeBody(
     val groups by viewModel.groups.collectAsState()
     val appIds by viewModel.apps.collectAsState()
 
+
+
     LazyColumn() {
         item {
             ListItem(
                 headlineContent = { Text(stringResource(R.string.do_not_disturb)) },
                 trailingContent = {
                     Switch(
-                        checked = false,
-                        onCheckedChange = {},
+                        checked = appIds.contains(doNotDisturbAppId),
+                        onCheckedChange = {
+                            viewModel.toggleApp(doNotDisturbAppId, it)
+                        },
                     )
                 },
             )
@@ -138,8 +145,10 @@ fun HomeBody(
                 headlineContent = { Text(stringResource(R.string.all_applications)) },
                 trailingContent = {
                     Switch(
-                        checked = false,
-                        onCheckedChange = {},
+                        checked = appIds.contains(allApplicationsAppId),
+                        onCheckedChange = {
+                            viewModel.toggleApp(allApplicationsAppId, it)
+                        },
                     )
                 },
             )
