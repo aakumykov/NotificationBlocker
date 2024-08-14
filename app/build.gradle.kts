@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.notificationblocker"
+    namespace = "com.valentinvignal.notificationblocker"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.notificationblocker"
+        applicationId = "com.valentinvignal.notificationblocker"
         minSdk = 34
         targetSdk = 34
         versionCode = 1
