@@ -72,7 +72,6 @@ fun GroupScreen(
 
     val uiState = viewModel.uiState.collectAsState()
     val linkedApps = viewModel.appsState.collectAsState();
-    val context = LocalContext.current;
 
     val editSheetState = rememberModalBottomSheetState()
     var showEditBottomSheet by remember { mutableStateOf(false) }
