@@ -48,6 +48,7 @@ class NotificationBlockerListenerService : NotificationListenerService() {
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         // Optionally handle notification removal
+        Log.d("NB","onNotificationRemoved()")
     }
 
     override fun onListenerConnected() {
